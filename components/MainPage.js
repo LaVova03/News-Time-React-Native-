@@ -8,11 +8,7 @@ import Form from './Form';
 
 export default function MainPage({ navigation }) {
 
-    const [news, setNews] = useState([
-        // { name: 'Google', anons: '22.02.2022', full: 'Create Google', key: '1', img: 'https://www.android.com/static/2016/img/gms/search.png' },
-        // { name: 'Facebook', anons: '22.02.2022', full: 'Create Facebook', key: '2', img: 'https://www.deskera.com/blog/content/images/2021/11/alexander-shatov-CTZhGbSxWLI-unsplash.jpg' },
-        // { name: 'Instagram', anons: '22.02.2022', full: 'Create Instagram', key: '3', img: 'https://www.liga.net/images/general/2022/09/09/20220909173635-1819.jpg?v=1662734195' },
-    ]);
+    const [news, setNews] = useState([]);
 
     const [isModal, setModal] = useState(false);
     const [isEditModal, setEditModal] = useState(false);
