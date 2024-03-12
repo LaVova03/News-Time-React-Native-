@@ -11,7 +11,7 @@ export default function Form({ addNewsFromModal, editNewsFromModal, isEditModal,
                     anons: isEditModal ? isItem.anons : '',
                     full: isEditModal ? isItem.full : '',
                     img: isEditModal ? isItem.img : '',
-                    ...(isEditModal && { key: isItem.key })
+                    key: isEditModal ? isItem.key : Math.random().toFixed(6).toString(),
                 }}
                 onSubmit={(values, reset) => {
                     { isEditModal ? editNewsFromModal(values) : addNewsFromModal(values) }

@@ -1,5 +1,6 @@
+import axios from 'axios';
 import { View, Text, Pressable, FlatList, Image, StyleSheet, Modal } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { gStyle } from '../styles/style';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -8,39 +9,62 @@ import Form from './Form';
 export default function MainPage({ navigation }) {
 
     const [news, setNews] = useState([
-        { name: 'Google', anons: '22.02.2022', full: 'Create Google', key: '1', img: 'https://www.android.com/static/2016/img/gms/search.png' },
-        { name: 'Facebook', anons: '22.02.2022', full: 'Create Facebook', key: '2', img: 'https://www.deskera.com/blog/content/images/2021/11/alexander-shatov-CTZhGbSxWLI-unsplash.jpg' },
-        { name: 'Instagram', anons: '22.02.2022', full: 'Create Instagram', key: '3', img: 'https://www.liga.net/images/general/2022/09/09/20220909173635-1819.jpg?v=1662734195' },
+        // { name: 'Google', anons: '22.02.2022', full: 'Create Google', key: '1', img: 'https://www.android.com/static/2016/img/gms/search.png' },
+        // { name: 'Facebook', anons: '22.02.2022', full: 'Create Facebook', key: '2', img: 'https://www.deskera.com/blog/content/images/2021/11/alexander-shatov-CTZhGbSxWLI-unsplash.jpg' },
+        // { name: 'Instagram', anons: '22.02.2022', full: 'Create Instagram', key: '3', img: 'https://www.liga.net/images/general/2022/09/09/20220909173635-1819.jpg?v=1662734195' },
     ]);
 
     const [isModal, setModal] = useState(false);
     const [isEditModal, setEditModal] = useState(false);
     const [isItem, setItem] = useState(null);
 
-    const addNewsFromModal = (article) => {
-        setNews((prev) => {
-            article.key = Math.random().toString()
-            return [
-                ...prev,
-                article
-            ]
-        })
+    useEffect(() => {
+        fetchNews();
+    }, []);
+
+    const fetchNews = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/api/news');
+            setNews(response.data);
+        } catch (error) {
+            console.error('Error fetching news:', error);
+        }
+    };
+
+    const addNewsFromModal = async (article) => {
+        try {
+            const response = await axios.post('http://localhost:5000/api/news', article);
+            console.log(response.data)
+        } catch (error) {
+            console.error('Error adding news:', error.message);
+        } finally {
+            fetchNews();
+        }
         setModal(false);
         setItem(null);
     }
 
-    const editNewsFromModal = (article) => {
-        setNews((prevNews) => {
-            return prevNews.map((el) => {
-                if (el.key === article.key) {
-                    return article;
-                } else {
-                    console.log(article.key);
-                    return el;
-                }
-            });
-        });
+    const editNewsFromModal = async (article) => {
+        try {
+            const response = await axios.put(`http://localhost:5000/api/news/${isItem._id}`, article);
+            console.log(response.data)
+        } catch (error) {
+            console.error('Error adding news:', error.message);
+        } finally {
+            fetchNews();
+        }
         setEditModal(false);
+    };
+
+    const deleteNews = async (item) => {
+        try {
+            const response = await axios.delete(`http://localhost:5000/api/news/${item._id}`);
+            console.log(response.data)
+        } catch (error) {
+            console.error('Error adding news:', error.message);
+        } finally {
+            fetchNews();
+        }
     };
 
     return (
@@ -77,11 +101,7 @@ export default function MainPage({ navigation }) {
                         <Pressable style={styles.edit} onPress={() => { setEditModal(true); setItem(item) }}>
                             <Text style={styles.text}>Edit</Text>
                         </Pressable>
-                        <Pressable style={styles.edit} onPress={() => {
-                            setNews((prevNews) => {
-                                return prevNews.filter((newsItem) => newsItem.key !== item.key);
-                            });
-                        }}>
+                        <Pressable style={styles.edit} onPress={() => { deleteNews(item) }}>
                             <Text style={styles.text}>Delete</Text>
                         </Pressable>
                     </View>
